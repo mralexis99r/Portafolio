@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cristian ARS - Home</title>
+
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .video-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+        .shadow-text {
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.9);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+
+    <!-- Video Background -->
+    <video class="video-bg" autoplay muted loop playsinline>
+        <source src="../assets/background.mp4" type="video/mp4">
+        Tu navegador no soporta el video.
+    </video>
+
+    <!-- Overlay oscuro -->
+    <div class="overlay"></div>
+
+    <!-- Navbar -->
+    <nav class="flex justify-between items-center p-5 bg-white bg-opacity-80 shadow dark:bg-gray-800 dark:bg-opacity-80 dark:text-white">
+        <div class="text-xl font-bold">Cristian ARS</div>
+        <div class="space-x-4">
+            <a href="about.html" class="hover:text-blue-500">Acerca de</a>
+            <a href="projects.html" class="hover:text-blue-500">Mis Proyectos</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="flex flex-col justify-center items-center h-[80vh] text-center relative z-10">
+        <h1 class="text-4xl font-bold mb-4 text-white shadow-text" id="main-title"></h1>
+        <p class="text-2xl text-white shadow-text" id="subtitle">QA Manual/QA Automation</p>
+    </section>
+
+    <!-- Switchers -->
+    <div class="fixed bottom-5 right-5 flex space-x-2">
+        <button onclick="switchLanguage()" class="bg-blue-500 text-white px-4 py-2 rounded shadow">Español / English</button>
+        <button onclick="toggleDarkMode()" class="bg-gray-700 text-white px-4 py-2 rounded shadow">☀️ / 🌙</button>
+    </div>
+
+    <script>
+        let lang = 'es';
+        const translations = {
+            'es': {
+                'main-title': 'Hola, soy Cristian Alexis Roman Santiago, Bienvenido a mi Sitio Web',
+                'subtitle': 'QA Manual/QA Automation'
+            },
+            'en': {
+                'main-title': 'Hi, I am Cristian Alexis Roman Santiago, Welcome to My Website',
+                'subtitle': 'Manual QA/Automation QA'
+            }
+        };
+
+        function typeWriter(text, id, i = 0) {
+            if (i < text.length) {
+                document.getElementById(id).innerHTML = text.substring(0, i + 1);
+                setTimeout(() => typeWriter(text, id, i + 1), 50);
+            }
+        }
+
+        function renderTexts() {
+            typeWriter(translations[lang]['main-title'], 'main-title');
+            document.getElementById('subtitle').innerText = translations[lang]['subtitle'];
+        }
+
+        function switchLanguage() {
+            lang = (lang === 'es') ? 'en' : 'es';
+            renderTexts();
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        renderTexts();
+    </script>
+
+</body>
+</html>
