@@ -75,7 +75,10 @@ export function Dashboard({ locale, setLocale, theme, setTheme }: Props) {
     }
   }, [t.invalid, t.unavailable]);
 
-  useEffect(() => { void loadSummary(); }, [loadSummary]);
+  useEffect(() => {
+    const requestId = window.setTimeout(() => void loadSummary(), 0);
+    return () => window.clearTimeout(requestId);
+  }, [loadSummary]);
 
   async function login(event: FormEvent) {
     event.preventDefault();
