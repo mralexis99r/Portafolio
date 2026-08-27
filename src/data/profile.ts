@@ -14,8 +14,8 @@ export const profile = {
   resume: '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf',
   profileImage: null as string | null,
   summary: {
-    es: 'QA Engineer con más de cuatro años de experiencia en pruebas manuales, funcionales y de automatización. Trabajo a lo largo del ciclo de calidad: análisis de requerimientos, diseño de pruebas, automatización, rendimiento, validación de datos y soporte a entregas continuas.',
-    en: 'QA Engineer with more than four years of experience in manual, functional, and automated testing. I work across the quality lifecycle: requirements analysis, test design, automation, performance, data validation, and continuous delivery support.'
+    es: 'QA Engineer con más de 4 años de experiencia en pruebas manuales, funcionales y de automatización. Trabajo a lo largo del ciclo de calidad: análisis de requerimientos, diseño de pruebas, automatización, rendimiento, validación de datos y soporte a entregas continuas.',
+    en: 'QA Engineer with more than 4 years of experience in manual, functional, and automated testing. I work across the quality lifecycle: requirements analysis, test design, automation, performance, data validation, and continuous delivery support.'
   } satisfies LocalizedText,
   focus: [
     { es: 'Quality Engineering', en: 'Quality Engineering' },
