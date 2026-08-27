@@ -14,8 +14,8 @@ export const profile = {
   resume: '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf',
   profileImage: null as string | null,
   summary: {
-    es: 'QA Engineer con más de tres años de experiencia en pruebas manuales, funcionales y de automatización. Trabajo a lo largo del ciclo de calidad: diseño de pruebas, validación de datos y APIs, seguimiento de defectos y soporte a entregas continuas.',
-    en: 'QA Engineer with more than three years of experience in manual, functional, and automated testing. I work across the quality lifecycle: test design, data and API validation, defect management, and continuous delivery support.'
+    es: 'QA Engineer con más de cuatro años de experiencia en pruebas manuales, funcionales y de automatización. Trabajo a lo largo del ciclo de calidad: análisis de requerimientos, diseño de pruebas, automatización, rendimiento, validación de datos y soporte a entregas continuas.',
+    en: 'QA Engineer with more than four years of experience in manual, functional, and automated testing. I work across the quality lifecycle: requirements analysis, test design, automation, performance, data validation, and continuous delivery support.'
   } satisfies LocalizedText,
   focus: [
     { es: 'Quality Engineering', en: 'Quality Engineering' },
@@ -26,6 +26,40 @@ export const profile = {
     { es: 'CI/CD', en: 'CI/CD' }
   ] satisfies LocalizedText[],
   experience: [
+    {
+      company: 'AXITY',
+      role: { es: 'QA Automation Engineer', en: 'QA Automation Engineer' },
+      period: { es: 'dic. 2025 — actualidad', en: 'Dec 2025 — Present' },
+      responsibilities: {
+        es: [
+          'Análisis de requerimientos e historias de usuario para diseñar casos manuales, de integración e integrales.',
+          'Mantenimiento de scripts existentes y creación de automatizaciones para nuevos casos con Selenium y TestNG.',
+          'Ejecución de pruebas de rendimiento y carga de usuarios con Gatling, Java y JMeter dentro de un equipo Scrum.'
+        ],
+        en: [
+          'Analyze requirements and user stories to design manual, integration, and end-to-end test cases.',
+          'Maintain existing scripts and create automation for new test cases using Selenium and TestNG.',
+          'Execute performance and user load testing with Gatling, Java, and JMeter within a Scrum team.'
+        ]
+      },
+      technologies: ['Selenium', 'Java', 'TestNG', 'Gatling', 'JMeter', 'Scrum']
+    },
+    {
+      company: 'SWBC',
+      role: { es: 'QA Engineer', en: 'QA Engineer' },
+      period: { es: 'sept. 2025 — dic. 2025', en: 'Sep 2025 — Dec 2025' },
+      responsibilities: {
+        es: [
+          'Ejecución de pruebas principalmente manuales de acuerdo con las necesidades de los proyectos.',
+          'Mantenimiento de casos de prueba automatizados existentes con Selenium y Java.'
+        ],
+        en: [
+          'Performed primarily manual testing according to project needs.',
+          'Maintained existing automated test cases using Selenium and Java.'
+        ]
+      },
+      technologies: ['Manual Testing', 'Selenium', 'Java']
+    },
     {
       company: 'NEORIS',
       role: { es: 'QA Engineer', en: 'QA Engineer' },
