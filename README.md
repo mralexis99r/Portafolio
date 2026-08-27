@@ -158,6 +158,10 @@ SESSION_SECRET=un-secreto-aleatorio-de-al-menos-32-caracteres
 ANALYTICS_HASH_SECRET=otro-secreto-aleatorio-independiente
 ```
 
+En desarrollo, copia estos valores en `.env.local`; `npm run dev` carga ese
+archivo automáticamente. `.env.local` está excluido de Git para no publicar
+las credenciales.
+
 La sesión dura una hora y utiliza `HttpOnly`, `Secure` en producción y `SameSite=Strict`.
 
 ### Exportación CSV
