@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0a2530"/>
+  <g stroke="#21414c" opacity=".7"><path d="M0 90h1200M0 180h1200M0 270h1200M0 360h1200M0 450h1200M0 540h1200"/><path d="M90 0v630M180 0v630M270 0v630M360 0v630M450 0v630M540 0v630M630 0v630M720 0v630M810 0v630M900 0v630M990 0v630M1080 0v630"/></g>
+  <rect x="84" y="80" width="72" height="72" fill="none" stroke="#51c6c5" stroke-width="2"/>
+  <text x="120" y="126" fill="#eef8f7" font-family="Arial,sans-serif" font-size="24" font-weight="700" text-anchor="middle">CR</text>
+  <text x="84" y="285" fill="#9fb4b8" font-family="Arial,sans-serif" font-size="30" font-weight="600">CRISTIAN ALEXIS ROMAN SANTIAGO</text>
+  <text x="84" y="380" fill="#eef8f7" font-family="Arial,sans-serif" font-size="92" font-weight="700">QA ENGINEER</text>
+  <rect x="84" y="438" width="190" height="4" fill="#51c6c5"/>
+  <text x="84" y="505" fill="#9fb4b8" font-family="Arial,sans-serif" font-size="25">Functional · Automation · API · Performance · CI/CD</text>
+  <text x="1000" y="565" fill="#51c6c5" font-family="Arial,sans-serif" font-size="18" font-weight="700">MONTERREY, MX</text>
+</svg>
