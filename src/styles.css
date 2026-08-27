@@ -100,6 +100,7 @@ h2 { margin-bottom: 0; font-size: clamp(2rem, 4vw, 3.6rem); line-height: 1.08; l
 .visual-frame { padding: 18px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 85%, transparent); box-shadow: var(--shadow); }
 .visual-head { display: flex; justify-content: space-between; padding-bottom: 15px; border-bottom: 1px solid var(--line); color: var(--muted); font: 700 .58rem 'Manrope'; letter-spacing: .15em; }
 .visual-core { position: relative; display: grid; place-items: center; height: 260px; overflow: hidden; border-bottom: 1px solid var(--line); background: radial-gradient(circle, var(--accent-soft), transparent 62%); }
+.visual-core img { width: 100%; height: 100%; object-fit: cover; object-position: center 26%; }
 .initials { z-index: 2; font: 800 clamp(4rem, 8vw, 6rem)/1 'Manrope'; letter-spacing: -.09em; color: var(--ink); }
 .orbit { position: absolute; border: 1px solid var(--accent); border-radius: 50%; opacity: .35; }
 .orbit-one { width: 190px; height: 190px; }

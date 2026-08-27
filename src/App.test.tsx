@@ -9,10 +9,12 @@ describe('portfolio preferences', () => {
 
     expect(screen.getByRole('heading', { name: /Cristian Alexis Roman Santiago/i })).toHaveTextContent('QA Engineer');
     expect(screen.getByRole('link', { name: 'Ver experiencia' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Descargar CV' })).toHaveAttribute('href', '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer-ES.pdf');
 
     fireEvent.click(screen.getByRole('button', { name: 'EN' }));
 
     expect(screen.getByRole('link', { name: 'View experience' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Download resume' })).toHaveAttribute('href', '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf');
     expect(screen.getByRole('heading', { name: 'Featured QA projects' })).toBeInTheDocument();
     expect(document.documentElement.lang).toBe('en');
     expect(localStorage.getItem('portfolio-language')).toBe('en');

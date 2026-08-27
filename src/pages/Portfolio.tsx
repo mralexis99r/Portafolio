@@ -62,7 +62,7 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
               <div className="hero-actions">
                 <a className="button primary" href="#experience">{t.hero.experience}<Icon name="arrow" /></a>
                 <a className="button secondary" href="#projects">{t.hero.projects}</a>
-                <a className="text-link" href={profile.resume} download onClick={() => trackEvent('resume_download')}><Icon name="download" />{t.hero.resume}</a>
+                <a className="text-link" href={profile.resume[locale]} download onClick={() => trackEvent('resume_download')}><Icon name="download" />{t.hero.resume}</a>
               </div>
               <div className="social-row" aria-label={t.contact.social}>
                 <ExternalLink href={profile.linkedin} event="linkedin_click"><Icon name="linkedin" /><span>LinkedIn</span></ExternalLink>
@@ -73,8 +73,9 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
               <div className="visual-frame">
                 <div className="visual-head"><span>QUALITY / SYSTEM</span><span>2026</span></div>
                 <div className="visual-core">
-                  {profile.profileImage ? <img src={profile.profileImage} alt={profile.name} /> : <div className="initials" aria-hidden="true">CR</div>}
-                  <span className="orbit orbit-one" /><span className="orbit orbit-two" />
+                  {profile.profileImage
+                    ? <img src={profile.profileImage} alt={profile.name} />
+                    : <><div className="initials" aria-hidden="true">CR</div><span className="orbit orbit-one" /><span className="orbit orbit-two" /></>}
                 </div>
                 <div className="quality-grid">
                   {profile.focus.map((item, index) => <div key={item.en}><span>0{index + 1}</span>{item[locale]}</div>)}

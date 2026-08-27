@@ -1,9 +1,11 @@
 node_modules/
+__pycache__/
 dist/
 .env
 .env.local
 data/*.db*
 coverage/
+tmp/
 *.log
 .DS_Store
 public/robots.txt

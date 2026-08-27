@@ -97,24 +97,18 @@ Edita `linkedin`, `github`, `email`, `phoneDisplay`, `phoneHref` y `whatsapp` de
 
 ## Fotografía profesional
 
-No se encontró una fotografía en el repositorio, por lo que la interfaz usa un monograma neutral y no muestra un placeholder roto.
+La fotografía optimizada está en `public/profile.webp` y se utiliza tanto en el Hero como en las dos versiones del CV. Conserva la imagen proporcionada, sin generación ni alteración de facciones mediante IA.
 
-Para añadirla:
-
-1. Optimiza la fotografía a WebP o AVIF, idealmente entre 800 y 1200 px.
-2. Colócala como `public/profile.webp`.
-3. Cambia `profileImage: null` por `profileImage: '/profile.webp'` en `src/data/profile.ts`.
-4. Comprueba encuadre y peso en desktop y móvil.
-
-No modifiques facciones ni generes la fotografía con IA.
+Para reemplazarla, optimiza la nueva fotografía a WebP, conserva el nombre `profile.webp` y comprueba el encuadre en desktop, móvil y PDF.
 
 ## CV
 
-El CV descargable está en:
+Los CV descargables están en:
 
-`public/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf`
+- Inglés: `public/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf`.
+- Español: `public/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer-ES.pdf`.
 
-Reemplázalo conservando ese nombre para no cambiar los enlaces. El CV heredado contiene datos de contacto distintos a los proporcionados para el sitio; debe revisarse antes de publicar para evitar inconsistencias frente a recruiters.
+El selector de idioma determina qué versión descarga el recruiter. Para regenerarlos después de actualizar la experiencia, ejecuta `python scripts/generate_resume.py` con ReportLab disponible.
 
 ## Idiomas y temas
 
