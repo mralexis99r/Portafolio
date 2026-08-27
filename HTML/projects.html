@@ -17,52 +17,43 @@
         body { font-family: 'Segoe UI', sans-serif; transition: background-color 0.3s, color 0.3s; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+<body class="bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100" data-title-key="meta.projectsTitle">
 
     <!-- Navbar -->
     <nav class="flex justify-between items-center p-5 bg-white shadow dark:bg-gray-800 dark:text-white">
         <div class="text-xl font-bold">Cristian ARS</div>
         <div class="space-x-4">
-            <a href="index.html" class="hover:text-blue-500">Inicio</a>
-            <a href="about.html" class="hover:text-blue-500">Acerca de</a>
+            <a href="index.html" class="hover:text-blue-500" data-i18n="nav.home">Inicio</a>
+            <a href="about.html" class="hover:text-blue-500" data-i18n="nav.about">Acerca de</a>
         </div>
     </nav>
 
     <!-- Projects -->
     <section class="p-10 bg-white shadow-md max-w-5xl mx-auto my-10 rounded dark:bg-gray-800">
-        <h2 class="text-3xl font-bold mb-6" id="projects-title">Mis Proyectos</h2>
+        <h2 class="text-3xl font-bold mb-6" data-i18n="projects.title">Mis proyectos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="p-5 bg-gray-200 shadow rounded dark:bg-gray-700">
-                <h3 class="text-xl font-semibold">Automatización Facebook</h3>
-                <p>Pruebas automatizadas para login, posteo y navegación.</p>
+                <h3 class="text-xl font-semibold" data-i18n="projects.facebook.title">Automatización de Facebook</h3>
+                <p data-i18n="projects.facebook.description">Pruebas automatizadas para inicio de sesión, publicación y navegación.</p>
             </div>
             <div class="p-5 bg-gray-200 shadow rounded dark:bg-gray-700">
-                <h3 class="text-xl font-semibold">Automatización Amazon</h3>
-                <p>Automatización de flujo de compra y validación de carrito.</p>
+                <h3 class="text-xl font-semibold" data-i18n="projects.amazon.title">Automatización de Amazon</h3>
+                <p data-i18n="projects.amazon.description">Automatización del flujo de compra y validación del carrito.</p>
             </div>
         </div>
     </section>
 
     <!-- Switchers -->
     <div class="fixed bottom-5 right-5 flex space-x-2">
-        <button onclick="switchLanguage()" class="bg-blue-500 text-white px-4 py-2 rounded shadow">Español / English</button>
-        <button onclick="toggleDarkMode()" class="bg-gray-700 text-white px-4 py-2 rounded shadow">☀️ / 🌙</button>
+        <div class="flex rounded shadow overflow-hidden" role="group" data-i18n-aria-label="language.selector" aria-label="Seleccionar idioma">
+            <button type="button" data-language="es" class="px-3 py-2 font-semibold transition-colors" aria-pressed="true" lang="es">ES</button>
+            <button type="button" data-language="en" class="px-3 py-2 font-semibold transition-colors" aria-pressed="false" lang="en">EN</button>
+        </div>
+        <button type="button" onclick="toggleDarkMode()" class="bg-gray-700 text-white px-4 py-2 rounded shadow" data-i18n-aria-label="theme.toggle" aria-label="Cambiar tema de color">☀️ / 🌙</button>
     </div>
 
+    <script src="../assets/js/i18n.js"></script>
     <script>
-        let lang = 'es';
-        const translations = {
-            'es': { 'projects-title': 'Mis Proyectos' },
-            'en': { 'projects-title': 'My Projects' }
-        };
-
-        function switchLanguage() {
-            lang = (lang === 'es') ? 'en' : 'es';
-            for (const id in translations[lang]) {
-                document.getElementById(id).innerText = translations[lang][id];
-            }
-        }
-
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
         }
