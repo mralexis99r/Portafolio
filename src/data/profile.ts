@@ -1,6 +1,8 @@
 export type Locale = 'es' | 'en';
 export type LocalizedText = Record<Locale, string>;
 
+const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
 export const profile = {
   name: 'Cristian Alexis Roman Santiago',
   role: 'QA Engineer',
@@ -12,10 +14,10 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/alexis-roman-santiago/',
   github: 'https://github.com/mralexis99r',
   resume: {
-    es: '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer-ES.pdf',
-    en: '/resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf'
+    es: publicAsset('resume/Cristian-Alexis-Roman-Santiago-QA-Engineer-ES.pdf'),
+    en: publicAsset('resume/Cristian-Alexis-Roman-Santiago-QA-Engineer.pdf')
   },
-  profileImage: '/profile.webp' as string | null,
+  profileImage: publicAsset('profile.webp') as string | null,
   summary: {
     es: 'QA Engineer con más de 4 años de experiencia en pruebas manuales, funcionales y de automatización. Trabajo a lo largo del ciclo de calidad: análisis de requerimientos, diseño de pruebas, automatización, rendimiento, validación de datos y soporte a entregas continuas.',
     en: 'QA Engineer with more than 4 years of experience in manual, functional, and automated testing. I work across the quality lifecycle: requirements analysis, test design, automation, performance, data validation, and continuous delivery support.'

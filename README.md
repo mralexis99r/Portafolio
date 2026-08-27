@@ -164,6 +164,11 @@ las credenciales.
 
 La sesión dura una hora y utiliza `HttpOnly`, `Secure` en producción y `SameSite=Strict`.
 
+GitHub Pages publica únicamente la versión estática del portafolio. El workflow
+de Pages desactiva analytics porque GitHub Pages no ejecuta la API de Node. Para
+usar el dashboard en producción, despliega el proyecto completo en un servicio
+compatible con funciones de servidor y configura Turso.
+
 ### Exportación CSV
 
 Después de iniciar sesión, selecciona **Exportar CSV**. El endpoint `/api/admin/export.csv` entrega UTF-8 con BOM, comillas seguras y terminación CRLF para compatibilidad con Excel. La exportación no incluye el hash del visitante.
