@@ -17,7 +17,7 @@ import {
   setSecureCookie,
   verifySessionToken,
   visitorHash
-} from './lib/security.ts';
+} from './lib/security.js';
 
 const app = express();
 const port = Number(process.env.PORT || 3001);

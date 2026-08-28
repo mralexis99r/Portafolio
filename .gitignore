@@ -10,3 +10,5 @@ tmp/
 .DS_Store
 public/robots.txt
 public/sitemap.xml
+.vercel
+.env*
