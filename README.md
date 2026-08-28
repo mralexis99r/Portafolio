@@ -9,20 +9,21 @@ Portfolio profesional bilingüe orientado a recruiters y hiring managers de tecn
 - **Datos:** libSQL. En desarrollo usa un archivo SQLite local; en producción puede conectarse a Turso mediante HTTPS.
 - **Validación:** Zod en todos los payloads públicos.
 - **Pruebas:** Vitest y Testing Library.
-- **Deploy recomendado:** Vercel para frontend y función Express; Turso para persistencia de analytics.
+- **Deploy:** Vercel para frontend y función Express; Turso para contenido y analytics persistentes.
 
 La aplicación mantiene una sola unidad desplegable. El frontend envía eventos mínimos a la API; la API valida, reduce el User-Agent a categorías generales y guarda datos agregables en libSQL. El dashboard consulta la misma API mediante una cookie de sesión firmada.
 
 ```text
 Recruiter ──> React portfolio ──> POST /api/events ──> libSQL/Turso
                                       │
-Owner ──> /private-insights ──> signed HttpOnly session
+Owner ──> /login ──> signed HttpOnly session
                                       │
+                                      ├──> portfolio editor
                                       ├──> aggregated metrics
                                       └──> Excel-compatible CSV
 ```
 
-No hay microservicios, CMS ni dependencias de UI innecesarias.
+No hay microservicios ni dependencias de UI innecesarias. El CMS privado usa la misma API y base de datos del portafolio.
 
 ## Ejecución local
 
@@ -57,7 +58,7 @@ El build crea `dist/`, además de generar `robots.txt` y `sitemap.xml` con `SITE
 
 ```text
 api/
-  index.ts                 API, analytics, autenticación y CSV
+  index.ts                 API, CMS, analytics, autenticación y CSV
   lib/security.ts          sesiones, hashing, cookies y parsing seguro
 public/
   resume/                  CV público descargable
@@ -77,7 +78,7 @@ src/
 
 ## Actualizar información profesional
 
-Toda la información pública se centraliza en `src/data/profile.ts`.
+El propietario puede actualizar datos principales, resumen bilingüe, foto, experiencia y certificados desde `/login`. Los cambios se validan en el servidor y se guardan en Turso. Habilidades, proyectos, formación, idiomas y textos de interfaz permanecen en `src/data/profile.ts`.
 
 ### Experiencia
 
@@ -99,7 +100,7 @@ Edita `linkedin`, `github`, `email`, `phoneDisplay`, `phoneHref` y `whatsapp` de
 
 La fotografía optimizada está en `public/profile.webp` y se utiliza tanto en el Hero como en las dos versiones del CV. Conserva la imagen proporcionada, sin generación ni alteración de facciones mediante IA.
 
-Para reemplazarla, optimiza la nueva fotografía a WebP, conserva el nombre `profile.webp` y comprueba el encuadre en desktop, móvil y PDF.
+Para reemplazarla en la web, inicia sesión en `/login` y sube una imagen JPG, PNG o WebP menor de 2 MB. El archivo estático sigue siendo el respaldo y la imagen usada para generar el CV.
 
 ## CV
 
@@ -146,7 +147,7 @@ La variable del servidor es autoritativa.
 
 Ruta local y de producción:
 
-`/private-insights`
+`/login`
 
 No está enlazada desde el sitio, se excluye de robots/sitemap y responde con `noindex`. La ruta no es el control de seguridad: todos los datos requieren una sesión firmada creada después de validar `ADMIN_PASSWORD`.
 
@@ -164,10 +165,7 @@ las credenciales.
 
 La sesión dura una hora y utiliza `HttpOnly`, `Secure` en producción y `SameSite=Strict`.
 
-GitHub Pages publica únicamente la versión estática del portafolio. El workflow
-de Pages desactiva analytics porque GitHub Pages no ejecuta la API de Node. Para
-usar el dashboard en producción, despliega el proyecto completo en un servicio
-compatible con funciones de servidor y configura Turso.
+GitHub conserva el código y ejecuta lint, pruebas y build. La página pública y el panel privado se publican únicamente en Vercel para mantener contenido y analytics en una sola versión oficial.
 
 ### Exportación CSV
 
@@ -189,7 +187,7 @@ TURSO_DATABASE_URL=libsql://tu-base-de-datos.turso.io
 TURSO_AUTH_TOKEN=tu-token-servidor
 ```
 
-La tabla se crea automáticamente. Cada nuevo evento elimina registros anteriores a `ANALYTICS_RETENTION_DAYS`. Para borrar todos los analytics, elimina las filas de `analytics_events` desde Turso o elimina el archivo local con la API detenida.
+Las tablas se crean automáticamente. Cada nuevo evento elimina registros anteriores a `ANALYTICS_RETENTION_DAYS`. Para borrar todos los analytics, elimina las filas de `analytics_events` desde Turso o elimina el archivo local con la API detenida.
 
 ## SEO
 
@@ -218,6 +216,6 @@ Vercel ejecuta `api/index.ts` como función Node. La regla de rewrite conserva l
 
 ## Headers y seguridad
 
-`vercel.json` aplica CSP, HSTS, protección contra framing, MIME sniffing, referrer leakage y acceso a cámara, micrófono, geolocalización, pagos y USB. La API añade los mismos principios, CORS restringido, límite de 4 KB, validación por schema, métodos cerrados, rate limiting y errores sin stack trace para el cliente.
+`vercel.json` aplica CSP, HSTS, protección contra framing, MIME sniffing, referrer leakage y acceso a cámara, micrófono, geolocalización, pagos y USB. La API añade los mismos principios, CORS restringido, límites de payload, validación por schema, métodos cerrados, rate limiting y errores sin stack trace para el cliente.
 
 Consulta `SECURITY.md` para el modelo de amenazas, revisión realizada y riesgos conocidos.

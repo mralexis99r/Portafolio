@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { createClient, type Client } from '@libsql/client';
 import { z } from 'zod';
+import { defaultContent, type PortfolioContent } from '../shared/content.js';
 import {
   ADMIN_COOKIE,
   VISITOR_COOKIE,
@@ -54,6 +55,21 @@ async function getDatabase() {
     )`);
     await database.execute('CREATE INDEX IF NOT EXISTS idx_events_date ON analytics_events(occurred_at)');
     await database.execute('CREATE INDEX IF NOT EXISTS idx_events_visitor ON analytics_events(visitor_hash)');
+    await database.execute(`CREATE TABLE IF NOT EXISTS portfolio_content (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      content_json TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`);
+    await database.execute(`CREATE TABLE IF NOT EXISTS portfolio_photo (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      mime_type TEXT NOT NULL,
+      data_base64 TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )`);
+    await database.execute({
+      sql: 'INSERT OR IGNORE INTO portfolio_content (id, content_json, updated_at) VALUES (1, ?, ?)',
+      args: [JSON.stringify(defaultContent), new Date().toISOString()]
+    });
     return database;
   })();
   return databaseReady;
@@ -61,7 +77,7 @@ async function getDatabase() {
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1);
-app.use(express.json({ limit: '4kb', type: 'application/json' }));
+app.use(express.json({ limit: '3mb', type: 'application/json' }));
 app.use((request, _response, next) => {
   const rewrittenPath = request.query.path;
   if (request.path === '/api/index' && typeof rewrittenPath === 'string' && /^[a-zA-Z0-9/_-]+$/.test(rewrittenPath)) {
@@ -97,6 +113,25 @@ const eventSchema = z.object({
 }).strict();
 
 const loginSchema = z.object({ password: z.string().min(8).max(256) }).strict();
+const localizedSchema = z.object({ es: z.string().min(1).max(5000), en: z.string().min(1).max(5000) }).strict();
+const experienceSchema = z.object({
+  id: z.string().min(1).max(100), company: z.string().min(1).max(160), role: localizedSchema,
+  period: localizedSchema,
+  responsibilities: z.object({ es: z.array(z.string().min(1).max(1200)).max(20), en: z.array(z.string().min(1).max(1200)).max(20) }).strict(),
+  technologies: z.array(z.string().min(1).max(100)).max(40)
+}).strict();
+const certificateSchema = z.object({
+  id: z.string().min(1).max(100), name: localizedSchema, issuer: z.string().min(1).max(200),
+  date: z.string().max(100), credentialUrl: z.string().max(1000).refine((value) => value === '' || URL.canParse(value))
+}).strict();
+const contentSchema = z.object({
+  name: z.string().min(1).max(160), role: z.string().min(1).max(160), location: z.string().min(1).max(200),
+  email: z.email().max(320), phoneDisplay: z.string().min(1).max(80), phoneHref: z.string().min(1).max(120),
+  whatsapp: z.url().max(1000), linkedin: z.url().max(1000), github: z.url().max(1000), summary: localizedSchema,
+  experience: z.array(experienceSchema).max(30), certificates: z.array(certificateSchema).max(50),
+  photoUrl: z.string().min(1).max(1000), updatedAt: z.string().optional()
+}).strict();
+const photoSchema = z.object({ dataUrl: z.string().max(2_800_000) }).strict();
 
 function requireAdmin(request: Request, response: Response, next: NextFunction) {
   if (!process.env.ADMIN_PASSWORD || !process.env.SESSION_SECRET) {
@@ -112,6 +147,44 @@ function requireAdmin(request: Request, response: Response, next: NextFunction) 
 }
 
 app.get('/api/health', (_request, response) => response.json({ status: 'ok' }));
+
+async function readContent(db: Client): Promise<PortfolioContent> {
+  const result = await db.execute('SELECT content_json, updated_at FROM portfolio_content WHERE id = 1');
+  const row = result.rows[0];
+  if (!row) return defaultContent;
+  try {
+    const parsed = contentSchema.safeParse(JSON.parse(String(row.content_json)));
+    return parsed.success ? { ...parsed.data, updatedAt: String(row.updated_at) } : defaultContent;
+  } catch {
+    return defaultContent;
+  }
+}
+
+app.get('/api/content', async (_request, response, next) => {
+  try {
+    const db = await getDatabase();
+    const content = await readContent(db);
+    const photo = await db.execute('SELECT updated_at FROM portfolio_photo WHERE id = 1');
+    response.json({ ...content, photoUrl: photo.rows.length ? `/api/content/photo?v=${encodeURIComponent(String(photo.rows[0].updated_at))}` : content.photoUrl });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/content/photo', async (_request, response, next) => {
+  try {
+    const db = await getDatabase();
+    const result = await db.execute('SELECT mime_type, data_base64, updated_at FROM portfolio_photo WHERE id = 1');
+    if (!result.rows.length) {
+      response.redirect(302, '/profile.webp');
+      return;
+    }
+    response.set({ 'Content-Type': String(result.rows[0].mime_type), 'Cache-Control': 'public, max-age=31536000, immutable' });
+    response.send(Buffer.from(String(result.rows[0].data_base64), 'base64'));
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.post('/api/events', async (request, response, next) => {
   try {
@@ -180,6 +253,58 @@ app.post('/api/auth/login', (request, response) => {
 app.post('/api/auth/logout', (_request, response) => {
   clearCookie(response, ADMIN_COOKIE);
   response.status(204).end();
+});
+
+app.get('/api/admin/content', requireAdmin, async (_request, response, next) => {
+  try {
+    response.json(await readContent(await getDatabase()));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put('/api/admin/content', requireAdmin, async (request, response, next) => {
+  try {
+    const parsed = contentSchema.safeParse(request.body);
+    if (!parsed.success) {
+      response.status(400).json({ error: 'Invalid portfolio content' });
+      return;
+    }
+    const updatedAt = new Date().toISOString();
+    const content = { ...parsed.data };
+    delete content.updatedAt;
+    const db = await getDatabase();
+    await db.execute({ sql: 'UPDATE portfolio_content SET content_json = ?, updated_at = ? WHERE id = 1', args: [JSON.stringify(content), updatedAt] });
+    response.json({ ...content, updatedAt });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.put('/api/admin/photo', requireAdmin, async (request, response, next) => {
+  try {
+    const parsed = photoSchema.safeParse(request.body);
+    const match = parsed.success ? /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(parsed.data.dataUrl) : null;
+    if (!match) {
+      response.status(400).json({ error: 'Invalid image. Use JPG, PNG, or WebP.' });
+      return;
+    }
+    const image = Buffer.from(match[2], 'base64');
+    if (!image.length || image.length > 2_000_000) {
+      response.status(400).json({ error: 'Image must be smaller than 2 MB.' });
+      return;
+    }
+    const updatedAt = new Date().toISOString();
+    const db = await getDatabase();
+    await db.execute({
+      sql: `INSERT INTO portfolio_photo (id, mime_type, data_base64, updated_at) VALUES (1, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET mime_type = excluded.mime_type, data_base64 = excluded.data_base64, updated_at = excluded.updated_at`,
+      args: [match[1], match[2], updatedAt]
+    });
+    response.json({ photoUrl: `/api/content/photo?v=${encodeURIComponent(updatedAt)}` });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get('/api/admin/summary', requireAdmin, async (_request, response, next) => {

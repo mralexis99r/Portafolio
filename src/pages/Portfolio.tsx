@@ -3,6 +3,7 @@ import { Icon } from '../components/Icon';
 import { PreferenceControls } from '../components/PreferenceControls';
 import { copy, profile, type Locale } from '../data/profile';
 import { trackEvent, usePageView, useSectionView } from '../hooks/useAnalytics';
+import { defaultContent, type PortfolioContent } from '../../shared/content';
 
 type Props = {
   locale: Locale;
@@ -18,6 +19,7 @@ function ExternalLink({ href, children, className, event }: { href: string; chil
 export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
   const t = copy[locale];
   const [menuOpen, setMenuOpen] = useState(false);
+  const [content, setContent] = useState<PortfolioContent>(defaultContent);
   const experienceRef = useSectionView('view_experience');
   const projectsRef = useSectionView('view_projects');
   usePageView();
@@ -28,11 +30,20 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
     return () => window.removeEventListener('hashchange', close);
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/content', { signal: controller.signal })
+      .then((response) => response.ok ? response.json() as Promise<PortfolioContent> : Promise.reject())
+      .then(setContent)
+      .catch(() => undefined);
+    return () => controller.abort();
+  }, []);
+
   return (
     <>
       <header className="site-header">
         <div className="shell header-inner">
-          <a className="brand" href="#top" aria-label={`${profile.name} — ${profile.role}`}>
+          <a className="brand" href="#top" aria-label={`${content.name} — ${content.role}`}>
             <span className="brand-mark">CR</span>
             <span><strong>Cristian Roman</strong><small>QA Engineer</small></span>
           </a>
@@ -57,24 +68,24 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
           <div className="shell hero-grid">
             <div className="hero-copy reveal">
               <div className="eyebrow"><span className="status-dot" />{t.hero.eyebrow}</div>
-              <h1><span>{profile.name}</span>{profile.role}</h1>
-              <p className="hero-summary">{profile.summary[locale]}</p>
+              <h1><span>{content.name}</span>{content.role}</h1>
+              <p className="hero-summary">{content.summary[locale]}</p>
               <div className="hero-actions">
                 <a className="button primary" href="#experience">{t.hero.experience}<Icon name="arrow" /></a>
                 <a className="button secondary" href="#projects">{t.hero.projects}</a>
                 <a className="text-link" href={profile.resume[locale]} download onClick={() => trackEvent('resume_download')}><Icon name="download" />{t.hero.resume}</a>
               </div>
               <div className="social-row" aria-label={t.contact.social}>
-                <ExternalLink href={profile.linkedin} event="linkedin_click"><Icon name="linkedin" /><span>LinkedIn</span></ExternalLink>
-                <ExternalLink href={profile.github} event="github_click"><Icon name="github" /><span>GitHub</span></ExternalLink>
+                <ExternalLink href={content.linkedin} event="linkedin_click"><Icon name="linkedin" /><span>LinkedIn</span></ExternalLink>
+                <ExternalLink href={content.github} event="github_click"><Icon name="github" /><span>GitHub</span></ExternalLink>
               </div>
             </div>
             <div className="hero-visual" aria-label="QA engineering overview">
               <div className="visual-frame">
                 <div className="visual-head"><span>QUALITY / SYSTEM</span><span>2026</span></div>
                 <div className="visual-core">
-                  {profile.profileImage
-                    ? <img src={profile.profileImage} alt={profile.name} />
+                  {content.photoUrl
+                    ? <img src={content.photoUrl} alt={content.name} />
                     : <><div className="initials" aria-hidden="true">CR</div><span className="orbit orbit-one" /><span className="orbit orbit-two" /></>}
                 </div>
                 <div className="quality-grid">
@@ -119,8 +130,8 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
           <div className="shell">
             <div className="section-heading"><p className="section-kicker">03 / {t.experience.kicker}</p><h2>{t.experience.title}</h2><p>{t.experience.body}</p></div>
             <div className="timeline">
-              {profile.experience.map((job, index) => (
-                <article className="experience-item" key={`${job.company}-${job.period.en}`}>
+              {content.experience.map((job, index) => (
+                <article className="experience-item" key={job.id}>
                   <div className="experience-meta"><span>0{index + 1}</span><time>{job.period[locale]}</time></div>
                   <div className="experience-main"><h3>{job.role[locale]}</h3><p className="company">{job.company}</p><ul>{job.responsibilities[locale].map((item) => <li key={item}>{item}</li>)}</ul></div>
                   <div className="experience-tools"><span>{t.experience.technologies}</span><p>{job.technologies.join(' · ')}</p></div>
@@ -151,6 +162,9 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
             <div className="credentials-grid">
               <div><span>{t.education.education}</span><h3>{profile.education.degree[locale]}</h3><p>{profile.education.institution} · {profile.education.period}</p></div>
               <div><span>{t.education.languages}</span>{profile.languages.map((language) => <p className="language-row" key={language.language.en}><strong>{language.language[locale]}</strong><b>{language.level}</b></p>)}</div>
+              {content.certificates.length > 0 && <div className="certificates-list"><span>{locale === 'es' ? 'Certificados' : 'Certificates'}</span>{content.certificates.map((certificate) => (
+                <article key={certificate.id} className="certificate-row"><h3>{certificate.name[locale]}</h3><p>{certificate.issuer}{certificate.date ? ` · ${certificate.date}` : ''}</p>{certificate.credentialUrl && <ExternalLink href={certificate.credentialUrl}>{locale === 'es' ? 'Ver credencial' : 'View credential'} <Icon name="arrow" /></ExternalLink>}</article>
+              ))}</div>}
             </div>
           </div>
         </section>
@@ -159,17 +173,17 @@ export function Portfolio({ locale, setLocale, theme, setTheme }: Props) {
           <div className="shell contact-grid">
             <div><p className="section-kicker">05 / {t.contact.kicker}</p><h2>{t.contact.title}</h2><p>{t.contact.body}</p></div>
             <div className="contact-actions">
-              <a className="contact-primary" href={`mailto:${profile.email}`} onClick={() => trackEvent('contact_click')}><span><Icon name="mail" />{t.contact.email}</span><Icon name="arrow" /></a>
-              <ExternalLink href={profile.whatsapp} className="contact-line" event="contact_click"><span><Icon name="whatsapp" />{t.contact.whatsapp}</span><strong>{profile.phoneDisplay}</strong></ExternalLink>
-              <a className="contact-line" href={profile.phoneHref} onClick={() => trackEvent('contact_click')}><span><Icon name="phone" />{t.contact.phone}</span><strong>{profile.phoneDisplay}</strong></a>
-              <div className="contact-line static"><span><Icon name="map" />{t.contact.location}</span><strong>{profile.location}</strong></div>
-              <p className="contact-email">{profile.email}</p>
+              <a className="contact-primary" href={`mailto:${content.email}`} onClick={() => trackEvent('contact_click')}><span><Icon name="mail" />{t.contact.email}</span><Icon name="arrow" /></a>
+              <ExternalLink href={content.whatsapp} className="contact-line" event="contact_click"><span><Icon name="whatsapp" />{t.contact.whatsapp}</span><strong>{content.phoneDisplay}</strong></ExternalLink>
+              <a className="contact-line" href={content.phoneHref} onClick={() => trackEvent('contact_click')}><span><Icon name="phone" />{t.contact.phone}</span><strong>{content.phoneDisplay}</strong></a>
+              <div className="contact-line static"><span><Icon name="map" />{t.contact.location}</span><strong>{content.location}</strong></div>
+              <p className="contact-email">{content.email}</p>
             </div>
           </div>
         </section>
       </main>
 
-      <footer><div className="shell footer-inner"><div><strong>CR / QA</strong><p>{t.footer.note}</p></div><div><p>© {new Date().getFullYear()} {profile.name}</p><small>{t.footer.rights}</small></div></div></footer>
+      <footer><div className="shell footer-inner"><div><strong>CR / QA</strong><p>{t.footer.note}</p></div><div><p>© {new Date().getFullYear()} {content.name}</p><small>{t.footer.rights}</small></div></div></footer>
     </>
   );
 }

@@ -41,10 +41,10 @@ export default function App() {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('portfolio-theme', theme);
     const metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-    if (metaTheme) metaTheme.content = theme === 'dark' ? '#081318' : '#f5f7f7';
+    if (metaTheme) metaTheme.content = theme === 'dark' ? '#0d0b1d' : '#f7f7fc';
   }, [theme]);
 
-  if (window.location.pathname === '/private-insights') {
+  if (window.location.pathname === '/login' || window.location.pathname === '/private-insights') {
     return <Dashboard locale={locale} setLocale={setLocale} theme={theme} setTheme={setTheme} />;
   }
 
